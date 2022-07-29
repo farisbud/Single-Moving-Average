@@ -1,3 +1,8 @@
+## Project Single Moving Average
+
+Project single moving average pergerakan 3,5,7
+-framework laravel 8 dan template adminLTE 3
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
 
 <p align="center">
