@@ -17,6 +17,23 @@ class PenjualanController extends Controller
      */
     public function index()
     {
+        $data = DB::table('penjualan')
+        ->select('tanggal', DB::raw('count(penjualan) as sum'))
+        ->groupBy('tanggal')
+        ->get();
+
+        if(request()->ajax()){
+            return datatables()->of($data)
+                                ->addColumn('aksi', function ($data){
+                                    $button = '<div class="project-actions text-center">
+                                                <a href="/penjualan-detail/'.$data->tanggal.'" class="btn btn-info btn-sm">
+                                                <i class="fas fa-folder"></i>view</a>
+                                                </div>';
+                                    return $button;
+                                })
+                                ->rawColumns(['aksi'])
+                                ->make(true);
+        }
         return view('penjualan.penjualan');
         //
     }
@@ -27,12 +44,12 @@ class PenjualanController extends Controller
                     ->select('tanggal', DB::raw('count(penjualan) as sum'))
                     ->groupBy('tanggal')
                     ->get();
-    
+
         $output = '';
         $no= 1;
 
 		if ($data->count() > 0) {
-            
+
 			$output .= '<table class="table table-striped table-sm text-center align-middle">
             <thead>
                 <tr>
@@ -48,7 +65,7 @@ class PenjualanController extends Controller
                             <td>'. $no++ .'</td>
                             <td>'. date('d-m-Y',strtotime($item->tanggal)) .'</td>
                             <td>'. $item->sum .'</td>
-                           
+
                             <td class="project-actions text-center">
                                 <a href="/penjualan-detail/'.$item->tanggal.'" class="btn btn-info btn-sm">
                                     <i class="fas fa-folder">
@@ -92,13 +109,13 @@ class PenjualanController extends Controller
      */
     public function store(Request $request)
     {
-    
+
         $messages = [
             'required' => ':attribute wajib diisi cuy!!!',
-           
+
         ];
         $validate = Validator::make($request->all(),[
-            
+
             'nama_roti' => 'required',
             'tanggal' =>'required',
             'penjualan' => 'required',
@@ -112,22 +129,22 @@ class PenjualanController extends Controller
                 'status' => 400,
                 'errors' => $validate->messages(),
                 //'message'=> 'gagal menambahkan data produk',
-    
-            ]);           
+
+            ]);
 
         }else{
 
             Penjualan::create([
-                
+
                 'produk_id'=>request('nama_roti'),
                 'tanggal' => request('tanggal'),
                 'penjualan' => request('penjualan'),
             ]);
-            
+
             return response()->json([
                 'status' => 200,
                 'message' => 'berhasil menambahkan penjualan',
-    
+
             ]);
         }
         //
@@ -157,7 +174,7 @@ class PenjualanController extends Controller
         $no= 1;
 
 		if ($pnj->count() > 0) {
-            
+
 			$detailTable .= '<table class="table table-striped table-sm text-center align-middle">
             <thead>
                 <tr>
@@ -199,7 +216,7 @@ class PenjualanController extends Controller
                             <td>'. $item->err7 .'</td>
                             <td>'. $item->error7 .'</td>
                             <td>'. $item->ape7 .' %</td>
-                           
+
                             <td class="project-actions text-center">
                             <a class="btn btn-info btn-sm editPnj" id="'. $item->id .'">
                                 <i class="fas fa-pencil-alt">
@@ -230,8 +247,8 @@ class PenjualanController extends Controller
      */
     public function edit($id)
     {
-        
-        
+
+
         return response()->json([
             'produk'=>Produk::all(),
             'penjualan'=>Penjualan::with('produk')
@@ -250,14 +267,14 @@ class PenjualanController extends Controller
      */
     public function update(Request $request, $id)
     {
-        
+
 
         $messages = [
             'required' => ':attribute wajib diisi cuy!!!',
-           
+
         ];
         $validate = Validator::make($request->all(),[
-            
+
             'nama_roti' => 'required',
             'tanggal' =>'required',
             'penjualan' => 'required',
@@ -271,8 +288,8 @@ class PenjualanController extends Controller
                 'status' => 400,
                 'errors' => $validate->messages(),
                 //'message'=> 'gagal menambahkan data produk',
-    
-            ]);           
+
+            ]);
 
         }else{
 
@@ -284,7 +301,7 @@ class PenjualanController extends Controller
             $real = Penjualan::select('penjualan')
                                 ->orderby('id','DESC')
                                 ->get();
-            
+
             $dataTiga = Penjualan::select('ma3')
                                 ->orderby('id','DESC')
                                 ->limit(1)
@@ -303,7 +320,7 @@ class PenjualanController extends Controller
 
             foreach($dataTiga as $tiga){
                         $nilai3 += $tiga->ma3;
-                    }            
+                    }
 
             foreach($dataLima as $lima){
                         $nilai5 += $lima->ma5;
@@ -348,7 +365,7 @@ class PenjualanController extends Controller
                     return response()->json([
                         'status' => 200,
                         'message' => 'berhasil mengubah penjualan',
-            
+
                     ]);
                 }elseif($real->count() >= 6){
 
@@ -367,7 +384,7 @@ class PenjualanController extends Controller
                     return response()->json([
                         'status' => 200,
                         'message' => 'berhasil mengubah penjualan',
-            
+
                     ]);
 
                 }elseif($real->count() >= 4) {
@@ -385,7 +402,7 @@ class PenjualanController extends Controller
                     return response()->json([
                         'status' => 200,
                         'message' => 'berhasil mengubah penjualan',
-            
+
                     ]);
 
                 }else{
@@ -396,17 +413,17 @@ class PenjualanController extends Controller
                         "tanggal" => $request->tanggal,
                         "penjualan" => $penjualan,
                     ]);
-                
+
                     return response()->json([
                         'status' => 200,
                         'message' => 'berhasil mengubah penjualan',
-            
+
                     ]);
-                    
+
                 }
 
 
-               
+
         }
 
         //
@@ -421,9 +438,9 @@ class PenjualanController extends Controller
     public function destroy($id)
     {
         $pnj = Penjualan::findOrFail($id);
-        
+
        try {
-        $pnj->delete();   
+        $pnj->delete();
        } catch (\Throwable $th) {
 
         return response()->json([
@@ -432,7 +449,7 @@ class PenjualanController extends Controller
         ]);
 
        }
-        
+
         return response()->json([
             'status' => 200,
             'message'=> 'Data produk berhasil dihapus'

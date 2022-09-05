@@ -18,7 +18,7 @@ Route::post('/login','Auth\LoginController@authenticate')->name('log_in');
 Route::post('/logout','Auth\LoginController@logout')->name('logout');
 
 Route::middleware(['auth'])->group(function () {
-    
+
     Route::get('/index','IndexController@index')->name('index');
     //produk
     Route::get('/produk','ProdukController@index')->name('produk');
@@ -30,7 +30,7 @@ Route::middleware(['auth'])->group(function () {
 
     //penjualan
     Route::get('/penjualan','PenjualanController@index')->name('penjualan');
-    Route::get('/penjualan-table','PenjualanController@fetchTable')->name('penjualan-table');
+   // Route::get('/penjualan-table','PenjualanController@fetchTable')->name('penjualan-table');
     Route::get('/penjualan-detail/{tgl}','PenjualanController@penjualanDetail');
     Route::get('/penjualan-detail/show/{tgl}','PenjualanController@fetchDetail');
     Route::get('/get/nama_produk','PenjualanController@fetchProduk');
@@ -46,7 +46,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/get/pnj-pro','PerhitunganController@fetchData');
     Route::get('/perhitungan-error','PerhitunganController@error')->name('error');
     Route::get('/error-table','PerhitunganController@fetchError');
-    
+
 
 
 });

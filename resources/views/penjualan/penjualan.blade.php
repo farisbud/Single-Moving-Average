@@ -10,7 +10,7 @@
       <li class="nav-item">
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
-   
+
     </ul>
 
     <!-- Right navbar links -->
@@ -39,14 +39,14 @@
                 <li class="breadcrumb-item active">Daftar Tanggal Penjualan</li>
               </ol>
           </div><!-- /.col -->
-        
+
         </div><!-- /.row -->
       </div><!-- /.container-fluid -->
     </div>
     <!-- /.content-header -->
 
     <!-- Main content -->
-    
+
     <!-- Main content -->
     <section class="content">
         <div class="container-fluid">
@@ -57,18 +57,29 @@
                 <div class="card-header">
                   <h3 class="card-title">Daftar Tanggal Penjualan</h3>
                   <div class="col-6 col-sm-4 col-md mb-3 mb-xl-0 text-right">
-                    <button class="btn btn-primary" id="modalPen" type="button">Tambah Penjualan</button>    
+                    <button class="btn btn-primary" id="modalPen" type="button">Tambah Penjualan</button>
                   </div>
                 </div>
                 <!-- /.card-header -->
                   {{-- success message --}}
                   <div id="success_message">
-                    
+
                   </div>
-                
-                <div class="card-body" id="show_all_penjualan">
-                  <h1 class="text-center text-secondary my-5">Loading...</h1>
-                    
+                <div class="card-body">
+                {{-- <div class="card-body" id="show_all_penjualan"> --}}
+                  {{-- <h1 class="text-center text-secondary my-5">Loading...</h1> --}}
+                  <table class="table table-striped table-sm text-center align-middle" id="penjualan_table">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Tanggal</th>
+                            <th>Jumlah Penjualan</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
                 </div>
                   {{-- modal add--}}
                   <div class="modal fade" id="showModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -83,28 +94,28 @@
                         <div class="modal-body">
                           <form id="add_pnj" method="POST" enctype="multipart/form-data">
                             @csrf
-                           
+
                             <div class="form-group">
                               <label for="recipient-name" class="col-form-label">Nama Roti:</label>
                                 <select class="form-control" name="nama_roti" id="nama_roti">
-                                
-                                  
+
+
                                 </select>
                               <span class="text-danger error-text nama_roti_error"></span>
                             </div>
-                         
+
                             <div class="form-group">
                               <label for="recipient-name" class="col-form-label">Tanggal:</label>
                                 <input type="date" class="form-control"  name="tanggal">
                               <span class="text-danger error-text tanggal_error"></span>
                             </div>
-  
+
                             <div class="form-group">
                               <label for="recipient-name" class="col-form-label">Penjualan:</label>
                                 <input type="text" class="form-control"  name="penjualan">
                               <span class="text-danger error-text penjualan_error"></span>
                             </div>
-  
+
                         </div>
                         <div class="modal-footer">
                           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -115,7 +126,7 @@
                     </div>
                   </div>
                   {{-- / add modal --}}
-               
+
                 <!-- /.card-body -->
               </div>
               <!-- /.card -->
@@ -132,9 +143,9 @@
 
   @include('adminLTE.footer')
 <script>
-    
+
     $(document).ready(function () {
-      
+
 
       $.ajaxSetup({
         headers: {
@@ -142,21 +153,38 @@
           }
       });
 
-      function fetchPenjualan()
-      {
-        $.ajax({
-          type: "get",
-          url: "{{ route("penjualan-table") }}",
-            success: function (response) {
-              $("#show_all_penjualan").html(response);
-              $("table").DataTable({
-                "responsive": true,
-                "autoWidth": false,
+        function tablePenjualan()
+        {
+            $('#penjualan_table').DataTable({
+                serverSide : true,
+                responsive : true,
+                ajax : {
+                    url : "{{ route('penjualan') }}",
+                    type : 'GET',
+                },
+                columns :[
+                    {
+                    "data" : null, "sortable" : false,
+                    render : function (data, type, row, meta)
+                            {
+                                return meta.row + meta.settings._iDisplayStart + 1
+                            },
+                    },
+                    {
+                    data : 'tanggal' , name : 'tanggal'
+                    },
+                    {
+                         data : 'sum', name : 'sum'
+                    },
+                    {
+                        data : 'aksi', name : 'aksi',
+                    }
+                ]
 
-              });
-            }
-        });
-      }
+            })
+        }
+        tablePenjualan()
+
 
       //menampilkan produk roti
       function fetchProduk(){
@@ -166,13 +194,13 @@
           url: "/get/nama_produk",
           dataType: "JSON",
           success: function (response) {
-        
+
               if(response.produk){
                 $("#nama_roti").empty();
                 $("#nama_roti").append('<option disabled selected value=""> -- pilih produk -- </option>')
-                $.each(response.produk, function (key, value) { 
+                $.each(response.produk, function (key, value) {
                     $("#nama_roti").append('<option value="'+ value.id +'">'+ value.nama_produk +'</option>');
-                  
+
                 });
               }
           }
@@ -180,10 +208,10 @@
 
       }
 
-      fetchPenjualan();
+    //   tablePenjualan();
 
        //tampil modal kriteria
-       $("#modalPen").click(function (e) { 
+       $("#modalPen").click(function (e) {
         e.preventDefault();
 
         $("#showModal").modal("show");
@@ -191,7 +219,7 @@
       });
 
         //add Penjualan
-        $("#add_pnj").submit(function (e) { 
+        $("#add_pnj").submit(function (e) {
         e.preventDefault();
         $("#add_pnj_btn").prop('disabled', true);
         $("#add_pnj_btn").text('menyimpan...');
@@ -211,7 +239,7 @@
               success: function (response) {
                // console.log(response)
                if(response.status == 400 ){
-                    $.each(response.errors, function (previx, val) { 
+                    $.each(response.errors, function (previx, val) {
                         $('span.' +previx + '_error').text(val[0]);
                     });
                   $("#add_pnj_btn").prop('disabled', false);
@@ -224,17 +252,17 @@
                   $("#add_pnj_btn").prop('disabled', false);
                   $("#add_pnj_btn").text("Submit");
 
-                  fetchPenjualan();
+                  tablePenjualan();
                }
               }
           });
       });
 
-  
+
 
 
     });
 
-   
-    
+
+
 </script>
