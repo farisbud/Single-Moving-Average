@@ -37,7 +37,7 @@ class PenjualanController extends Controller
         return view('penjualan.penjualan');
         //
     }
-
+    //fetchTable tidak terpakai karena sudah diganti di index()
     public function fetchTable(){
 
         $data = DB::table('penjualan')
@@ -156,8 +156,34 @@ class PenjualanController extends Controller
      * @param  \App\Models\Penjualan  $penjualan
      * @return \Illuminate\Http\Response
      */
-    public function penjualanDetail()
+    public function penjualanDetail($tgl)
     {
+
+        $pnj = Penjualan::with('produk')
+                        ->where('tanggal', $tgl)
+                        ->get();
+
+        if(request()->ajax()){
+            return datatables()->of($pnj)
+                                ->addColumn('aksi', function($pnj){
+                                    $button = '<div class="project-actions text-center">
+                                                    <a class="btn btn-info btn-sm editPnj" id="'. $pnj->id .'">
+                                                    <i class="fas fa-pencil-alt">
+                                                    </i>
+                                                    Edit
+                                                </a>';
+                                    $button .= '<a class="btn btn-danger btn-sm deletePnj" id="'. $pnj->id .'" href="#">
+                                                    <i class="fas fa-trash">
+                                                    </i>
+                                                    Delete
+                                                </a>
+                                                </div';
+
+                                    return $button;
+                                })
+                                ->rawColumns(['aksi'])
+                                ->make(true);
+        }
 
         return view('penjualan.list_penjualan');
 

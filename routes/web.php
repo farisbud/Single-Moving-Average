@@ -32,7 +32,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/penjualan','PenjualanController@index')->name('penjualan');
    // Route::get('/penjualan-table','PenjualanController@fetchTable')->name('penjualan-table');
     Route::get('/penjualan-detail/{tgl}','PenjualanController@penjualanDetail');
-    Route::get('/penjualan-detail/show/{tgl}','PenjualanController@fetchDetail');
+    //Route::get('/penjualan-detail/show/{tgl}','PenjualanController@fetchDetail');
     Route::get('/get/nama_produk','PenjualanController@fetchProduk');
     Route::post('/penjualan','PenjualanController@store')->name('penjualan-add');
     Route::get('/penjualan/{id}','PenjualanController@edit');

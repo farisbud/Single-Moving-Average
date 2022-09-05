@@ -257,7 +257,7 @@
                   $("#add_pnj_btn").prop('disabled', false);
                   $("#add_pnj_btn").text("Submit");
 
-                  tablePenjualan();
+                  $("#penjualan_table").DataTable().ajax.reload();
                }
               }
           });
