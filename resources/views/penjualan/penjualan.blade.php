@@ -171,7 +171,11 @@
                             },
                     },
                     {
-                    data : 'tanggal' , name : 'tanggal'
+                    //mengganti format tanggal datatables
+                    data : 'tanggal' , name : 'tanggal',
+                        render: function (data, type, row) {
+                            return moment(new Date(data).toString()).format('DD/MM/YYYY');
+                        }
                     },
                     {
                          data : 'sum', name : 'sum'
@@ -179,7 +183,8 @@
                     {
                         data : 'aksi', name : 'aksi',
                     }
-                ]
+                ],
+
 
             })
         }
